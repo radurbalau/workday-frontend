@@ -7,7 +7,7 @@ import NotFound from "./pages/NotFound";
 import Navbar from './pages/Navbar'
 import UserHomePage from "./pages/UserHomePage";
 import AdminHomePage from "./pages/AdminHomePage";
-
+import Footer from "./pages/Footer"
 
 function App() {
     return (
@@ -36,7 +36,7 @@ function App() {
 
                 {/*<Route path="about" element={<About/>}/>*/}
             </Routes>
-
+            <Footer></Footer>
         </div>
     );
 }
