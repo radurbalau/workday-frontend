@@ -57,7 +57,8 @@ export default function SignIn() {
                 email: data.get('email'),
                 password: data.get('password')
             }).then((resp) => {
-                history("/users/" + username,{state:{token:resp.data.token,email:data.get('email')}})
+                console.log(resp.data)
+                history("/users/" + username,{state:{token:resp.data.token,email:data.get('email'),user_id:resp.data.item.id}})
             })
         }else{
             axios.post(process.env.REACT_APP_LOCAL_HOST + "/admin/login", {

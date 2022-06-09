@@ -77,7 +77,6 @@ export default function ButtonAppBar() {
                                 onClose={handleClose}
                             >
                                 <MenuItem onClick={handleClose}>Profile</MenuItem>
-                                <MenuItem onClick={handleClose}>My account</MenuItem>
                             </Menu>
                             <Button size={"large"} onClick={()=>{history('/login')}} color="inherit"><b>Logout</b></Button>
                             <Button color="inherit" onClick={()=>{history('/register')}}><b>Dashboard</b></Button>
