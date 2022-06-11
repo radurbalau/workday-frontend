@@ -44,12 +44,12 @@ const UserHomePage = () =>{
                 setRemainingPtos(resp.data.item.user_remaining_pto_days)
            })
 
+        //TODO: put an observer here
         axios.get(process.env.REACT_APP_LOCAL_HOST + "/users/pto/requests/" + userId,{
             headers: {
                 'Authorization': `${token}`
             }
         }).then((resp)=>{
-            console.log("BOSSS")
             setCurrentPtos([])
             for(let item of resp.data.item){
                 let x = item.pto_date_taken.split("T")[0].split("-")
@@ -70,24 +70,24 @@ const UserHomePage = () =>{
         })
     },[])
 
-    const dates = [ {
-        'title': 'All Day Event very long title',
-        'allDay': true,
-        'start': new Date(2022, 5, 1),
-        'end': new Date(2022, 5, 1)
-    },
-        {
-            'title': 'Event',
-            'start': new Date(2022, 5, 12),
-            'end': new Date(2022, 5, 12)
-        },{
-            "title": "vaction",
-            "comment": "lols",
-            "allDay": true,
-            "start": "2022-07-13T21:00:00.000Z",
-            "end": "2022-07-13T21:00:00.000Z",
-            "admin_approved": null
-        }]
+    // const dates = [ {
+    //     'title': 'All Day Event very long title',
+    //     'allDay': true,
+    //     'start': new Date(2022, 5, 1),
+    //     'end': new Date(2022, 5, 1)
+    // },
+    //     {
+    //         'title': 'Event',
+    //         'start': new Date(2022, 5, 12),
+    //         'end': new Date(2022, 5, 12)
+    //     },{
+    //         "title": "vaction",
+    //         "comment": "lols",
+    //         "allDay": true,
+    //         "start": "2022-07-13T21:00:00.000Z",
+    //         "end": "2022-07-13T21:00:00.000Z",
+    //         "admin_approved": null
+    //     }]
 
     const [open, setOpen] = React.useState(false);
 
@@ -102,6 +102,17 @@ const UserHomePage = () =>{
     const handleRequestPto = (e) => {
         console.log(pto_reason)
         console.log(pto_comment)
+        console.log(selectedSlot)
+        const list_item={
+            "title":pto_reason,
+            "comment" : pto_comment,
+            "allDay": true,
+            "start":new Date(selectedSlot),
+            "end":new Date(selectedSlot),
+            "admin_approved": null,
+            "key": currentPtos.length + 1
+        }
+        setCurrentPtos((currentPtos)=> [...currentPtos,list_item])
         axios.post(process.env.REACT_APP_LOCAL_HOST + "/users/pto/" + userId, {
             "pto_date_taken": selectedSlot,
             "pto_reason": pto_reason,
@@ -113,6 +124,7 @@ const UserHomePage = () =>{
             }}).then((resp)=>{
                 console.log(resp)
         })
+        window.location.reload();
     };
 
     const handlePtoReason = event => {
@@ -205,7 +217,8 @@ const UserHomePage = () =>{
                     Remaining User Ptos  : {remainingPtos}
                     <button onClick={()=>{console.log(currentPtos)}}>dsdsadsa</button>
 
-                    <div>Pending PTOS :</div>
+                    <h2>All Paid time offs :</h2>
+                    {/*TODO: add filter for accepted/ denied/ ongoing*/}
                     {currentPtos.map((day)=>{
                         return(<div style={{marginTop:"10px"}} key={day.key}><Card variant="outlined" sx={{ minWidth: 275 }}>
                             <CardContent>

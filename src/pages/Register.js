@@ -1,5 +1,4 @@
 import * as React from 'react';
-import { useNavigate } from 'react-router-dom';
 import axios from "axios";
 import {createTheme, ThemeProvider} from "@mui/material/styles";
 import Container from "@mui/material/Container";
@@ -14,30 +13,66 @@ import Checkbox from "@mui/material/Checkbox";
 import Button from "@mui/material/Button";
 import Grid from "@mui/material/Grid";
 import Link from "@mui/material/Link";
+import Dialog from "@mui/material/Dialog";
+import DialogTitle from "@mui/material/DialogTitle";
+import DialogContent from "@mui/material/DialogContent";
+import DialogContentText from "@mui/material/DialogContentText";
+import DialogActions from "@mui/material/DialogActions";
+import {useState} from "react";
 
 const theme = createTheme();
-
-
 const Register = () =>{
 
-    //TODO: alert  https://stackoverflow.com/questions/66778316/how-to-display-material-ui-alert-based-on-the-response-of-axios-post-reactjs
-    // response
-    const history = useNavigate();
+    let re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+
+    const [iopen, setOpen] = useState(false);
+    const [dialogueMessage,setDialogueMessage] = useState('')
+
     const handleSubmit = (event) => {
         event.preventDefault();
         const data = new FormData(event.currentTarget);
-        console.log(process.env.REACT_APP_LOCAL_HOST + "/users/register");
-        axios.post(process.env.REACT_APP_LOCAL_HOST + "/users/register", {
-            email: data.get('email'),
-            password: data.get('password'),
-        }).then((response)=>{console.log(response)})
+        if( re.test(data.get('email')) === false){
+            handleClickOpen()
+            setDialogueMessage("Entered email is not valid !")
+        }else {
+            axios.post(process.env.REACT_APP_LOCAL_HOST + "/users/register", {
+                email: data.get('email'),
+                password: data.get('password'),
+            }).then((response) => {
+                console.log(response)
+            })
+        }
+    };
 
+    const handleClickOpen = () => {
+        setOpen(true);
+    };
+
+    const handleClose = () => {
+        setOpen(false);
     };
 
     return (
         <ThemeProvider theme={theme}>
             <Container component="main" maxWidth="xs">
                 <CssBaseline />
+                <Dialog
+                    open={iopen}
+                    keepMounted
+                    onClose={handleClose}
+                    aria-describedby="alert-dialog-slide-description"
+                >
+                    <DialogTitle >{"There is a problem with your login !"}</DialogTitle>
+                    <DialogContent>
+                        <DialogContentText id="alert-dialog-slide-description">
+                            {dialogueMessage}
+                        </DialogContentText>
+                    </DialogContent>
+                    <DialogActions>
+                        <Button onClick={handleClose}>Disagree</Button>
+                        <Button onClick={handleClose}>Agree</Button>
+                    </DialogActions>
+                </Dialog>
                 <Box
                     sx={{
                         marginTop: 8,
@@ -82,13 +117,9 @@ const Register = () =>{
                             fullWidth
                             variant="contained"
                             sx={{ mt: 3, mb: 2 }}
-                            onClick={()=>{history("/login")}}
                         >
                             Register
                         </Button>
-
-
-
                         <Grid container>
                             <Grid item xs>
                                 <div/>

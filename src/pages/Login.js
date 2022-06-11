@@ -1,5 +1,3 @@
-
-
 import * as React from 'react';
 import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
@@ -16,64 +14,117 @@ import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import axios from "axios";
 import Switch from '@mui/material/Switch';
-
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogContentText from '@mui/material/DialogContentText';
+import DialogTitle from '@mui/material/DialogTitle';
+import Slide from '@mui/material/Slide';
 import {useNavigate} from "react-router-dom";
-
-function Copyright(props) {
-    return (
-        <Typography variant="body2" color="text.secondary" align="center" {...props}>
-            {'Copyright © '}
-            <Link color="inherit" href="https://mui.com/">
-                Your Website
-            </Link>{' '}
-            {new Date().getFullYear()}
-            {'.'}
-        </Typography>
-    );
-}
+import {useState} from "react";
 
 const theme = createTheme();
+let re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+
+
+const Transition = React.forwardRef(function Transition(props, ref) {
+    return <Slide direction="up" ref={ref} {...props} />;
+});
 
 export default function SignIn() {
 
     const history = useNavigate();
-    //TODO: alert  https://stackoverflow.com/questions/66778316/how-to-display-material-ui-alert-based-on-the-response-of-axios-post-reactjs
-    // response
 
-
-    const [checked, setChecked] = React.useState(true);
+    const [dialogueMessage,setDialogueMessage] = useState('')
+    const [checked, setChecked] = useState(true);
 
     const handleChange = (event) => {
         setChecked(event.target.checked);
+    };
+
+    const [iopen, setOpen] = useState(false);
+
+    const handleClickOpen = () => {
+        setOpen(true);
+    };
+
+    const handleClose = () => {
+        setOpen(false);
     };
     const handleSubmit = (event) => {
         event.preventDefault();
         const data = new FormData(event.currentTarget);
         const username = data.get('email').split("@")[0];
-        console.log("entered")
-        if (checked === false ) {
-            console.log("post")
-            axios.post(process.env.REACT_APP_LOCAL_HOST + "/users/login", {
-                email: data.get('email'),
-                password: data.get('password')
-            }).then((resp) => {
-                console.log(resp.data)
-                history("/users/" + username,{state:{token:resp.data.token,email:data.get('email'),user_id:resp.data.item.id}})
-            })
-        }else{
-            axios.post(process.env.REACT_APP_LOCAL_HOST + "/admin/login", {
-                email: data.get('email'),
-                password: data.get('password')
-            }).then((resp) => {
-                history("/admin/" + username,{state:{token:resp.data.token,email:data.get('email')}})
-            })
+        if( re.test(username) === false){
+            handleClickOpen()
+            setDialogueMessage("Entered email is not valid !")
+        }else {
+            if (checked === false) {
+                axios.post(process.env.REACT_APP_LOCAL_HOST + "/users/login", {
+                    email: data.get('email'),
+                    password: data.get('password')
+                }).then((resp) => {
+                        if (resp.data.success === false) {
+                            handleClickOpen()
+                            setDialogueMessage(resp.data.message)
+                        } else {
+                            history("/users/" + username, {
+                                state: {
+                                    token: resp.data.token,
+                                    email: data.get('email'),
+                                    user_id: resp.data.item.id
+                                }
+                            })
+                        }
+                    }
+                )
+            } else {
+                axios.post(process.env.REACT_APP_LOCAL_HOST + "/admin/login", {
+                    email: data.get('email'),
+                    password: data.get('password')
+                }).then((resp) => {
+                    if (resp.data.success === false) {
+                        handleClickOpen()
+                        setDialogueMessage(resp.data.message)
+                    } else {
+                        history("/admin/" + username, {
+                            state: {
+                                token: resp.data.token,
+                                email: data.get('email'),
+                                user_id: resp.data.item.id
+                            }
+                        })
+                    }
+                })
 
+            }
         }
     };
+
+
+
 
     return (
         <ThemeProvider theme={theme}>
             <Container component="main" maxWidth="xs">
+                <Dialog
+                    open={iopen}
+                    TransitionComponent={Transition}
+                    keepMounted
+                    onClose={handleClose}
+                    aria-describedby="alert-dialog-slide-description"
+                >
+                    <DialogTitle >{"There is a problem with your login !"}</DialogTitle>
+                    <DialogContent>
+                        <DialogContentText id="alert-dialog-slide-description">
+                            {dialogueMessage}
+                        </DialogContentText>
+                    </DialogContent>
+                    <DialogActions>
+                        <Button onClick={handleClose}>Disagree</Button>
+                        <Button onClick={handleClose}>Agree</Button>
+                    </DialogActions>
+                </Dialog>
                 <CssBaseline />
                 <Box
                     sx={{

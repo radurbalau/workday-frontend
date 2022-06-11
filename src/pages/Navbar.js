@@ -23,9 +23,7 @@ export default function ButtonAppBar() {
         setAnchorEl(event.currentTarget);
     };
 
-    const handleClose = () => {
-        setAnchorEl(null);
-    };
+
 
     return (
         <Box sx={{ flexGrow: 1 }}>
@@ -73,13 +71,10 @@ export default function ButtonAppBar() {
                                     vertical: 'top',
                                     horizontal: 'right',
                                 }}
-                                open={Boolean(anchorEl)}
-                                onClose={handleClose}
                             >
-                                <MenuItem onClick={handleClose}>Profile</MenuItem>
                             </Menu>
-                            <Button size={"large"} onClick={()=>{history('/login')}} color="inherit"><b>Logout</b></Button>
-                            <Button color="inherit" onClick={()=>{history('/register')}}><b>Dashboard</b></Button>
+                            <Button size={"large"} onClick={()=>{history('/home')}} color="inherit"><b>Logout</b></Button>
+                            <Button color="inherit" onClick={()=>{history('/home')}}><b>Dashboard</b></Button>
                         </div>
                     )}
 
