@@ -36,6 +36,10 @@ export default function AdminHomePageOnePtoUncheckedCard(props) {
         })
         console.log(props.pto.user_id)
         console.log("handle Approve")
+        console.log({
+                user_pto_dates_id: props.pto.user_pto_dates_id,
+                review: checked===true ? "TRUE" : "FALSE"
+            })
         axios.post(process.env.REACT_APP_LOCAL_HOST + "/admin/review/user/" + props.pto.user_id, {
             user_pto_dates_id: props.pto.user_pto_dates_id,
             review: checked===true ? "TRUE" : "FALSE"
@@ -50,6 +54,7 @@ export default function AdminHomePageOnePtoUncheckedCard(props) {
     }
 
     return (<div>
+        <button onClick={()=>{console.log(props.pto.user_id)}}>dsada</button>
         <Dialog open={open} onClose={handleClose}>
             {/*TODO: find a better way to check or not if checkbox is checked */}
             <DialogContent>

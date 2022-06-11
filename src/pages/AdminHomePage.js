@@ -37,10 +37,9 @@ LinearProgressWithLabel.propTypes = {
 const AdminHomePage = () =>{
     const location = useLocation();
     const token = location.state.token;
-    const [nonApprovedPtosList,setNonApprovedPtosList] = useState([]);
+    const [allPtoList,setAllPtoList] = useState([]);
     const [users,setUsers] = useState([])
     const [admins, setAdmins] = useState([])
-    // return(<div> {location.state.token} </div>)
     const [name_filter,setNameFilter] = useState('')
 
     useEffect(()=>{
@@ -49,18 +48,11 @@ const AdminHomePage = () =>{
                 'Authorization': `${token}`
             }
         }).then((resp)=>{
-            setNonApprovedPtosList(resp.data.item)
+            setAllPtoList(resp.data.item)
         })
-    },[nonApprovedPtosList])
+    },[allPtoList])
 
     useEffect(()=>{
-        axios.get(process.env.REACT_APP_LOCAL_HOST + "/admin/review/user/all",{
-            headers: {
-                'Authorization': `${token}`
-            }
-        }).then((resp)=>{
-            setUsers(resp.data.item)
-        })
 
         axios.get(process.env.REACT_APP_LOCAL_HOST + "/admin/review/admin/all",{
             headers: {
@@ -72,8 +64,19 @@ const AdminHomePage = () =>{
 
     },[])
 
-    return(<div>
-        {/*<button onClick={()=>{console.log(users)}}>dsadsdsa</button>*/}
+    useEffect(()=>{
+        axios.get(process.env.REACT_APP_LOCAL_HOST + "/admin/review/user/all",{
+            headers: {
+                'Authorization': `${token}`
+            }
+        }).then((resp)=>{
+            setUsers(resp.data.item)
+        })
+    },[allPtoList])
+
+
+        return(<div>
+        <button onClick={()=>{console.log(allPtoList)}}>dsadsdsa</button>
 
 
         <Grid p={10} container spacing={3}>
@@ -135,7 +138,7 @@ const AdminHomePage = () =>{
             {/*<button onClick={()=>{setNameFilter("raduadmin")}}> Filter By raduadmin</button>*/}
             <h2>Not approved Ptos</h2>
             <div>
-            {nonApprovedPtosList.filter((item)=>{if (name_filter !== '') {
+            {allPtoList.filter((item)=>{if (name_filter !== '') {
                 return name_filter === item.email.split("@")[0]
             }else{
                 return true
@@ -150,7 +153,7 @@ const AdminHomePage = () =>{
         <Grid item xs={2}>
             <h2>Solved Requests History</h2>
             {/*TODO: search user id and filter this thing*/}
-            {nonApprovedPtosList.filter((item)=>{if (name_filter !== '') {
+            {allPtoList.filter((item)=>{if (name_filter !== '') {
                 return name_filter === item.email.split("@")[0]
             }else{
                 return true

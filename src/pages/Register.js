@@ -20,6 +20,10 @@ import DialogContentText from "@mui/material/DialogContentText";
 import DialogActions from "@mui/material/DialogActions";
 import {useState} from "react";
 
+//TODO: add check to hide/show password
+//TODO: make user type password 2 times when registering
+//TODO: delete remember me and make it a check for showing/hiding password
+
 const theme = createTheme();
 const Register = () =>{
 

@@ -70,25 +70,6 @@ const UserHomePage = () =>{
         })
     },[])
 
-    // const dates = [ {
-    //     'title': 'All Day Event very long title',
-    //     'allDay': true,
-    //     'start': new Date(2022, 5, 1),
-    //     'end': new Date(2022, 5, 1)
-    // },
-    //     {
-    //         'title': 'Event',
-    //         'start': new Date(2022, 5, 12),
-    //         'end': new Date(2022, 5, 12)
-    //     },{
-    //         "title": "vaction",
-    //         "comment": "lols",
-    //         "allDay": true,
-    //         "start": "2022-07-13T21:00:00.000Z",
-    //         "end": "2022-07-13T21:00:00.000Z",
-    //         "admin_approved": null
-    //     }]
-
     const [open, setOpen] = React.useState(false);
 
     const handleClickOpen = () => {
@@ -218,7 +199,8 @@ const UserHomePage = () =>{
                     <button onClick={()=>{console.log(currentPtos)}}>dsdsadsa</button>
 
                     <h2>All Paid time offs :</h2>
-                    {/*TODO: add filter for accepted/ denied/ ongoing*/}
+                    {/*TODO: add filter for accepted/ denied/ ongoing */}
+                    {/*TODO: Make user choose between types of day offs instead of typing*/}
                     {currentPtos.map((day)=>{
                         return(<div style={{marginTop:"10px"}} key={day.key}><Card variant="outlined" sx={{ minWidth: 275 }}>
                             <CardContent>
