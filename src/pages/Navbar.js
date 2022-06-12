@@ -10,18 +10,31 @@ import AccountCircle from '@mui/icons-material/AccountCircle';
 import MenuItem from '@mui/material/MenuItem';
 import Menu from '@mui/material/Menu';
 import { useNavigate } from 'react-router-dom';
+import {useEffect} from "react";
 
 
-export default function ButtonAppBar() {
+export default function Navbar() {
 
-    //TODO: Use redux to listen to state
-    const [auth, setAuth] = React.useState(true);
+    const [auth, setAuth] = React.useState(false);
     const [anchorEl, setAnchorEl] = React.useState(null);
     const history = useNavigate();
+    const [loggedUser, setLoggedUser] = React.useState("")
+
 
     const handleMenu = (event) => {
         setAnchorEl(event.currentTarget);
     };
+
+    const a = localStorage.getItem("user");
+
+    useEffect(()=>{
+        console.log("navbar useeffect")
+        const loggedInUser = localStorage.getItem("user");
+        if (loggedInUser!==null) {
+            setLoggedUser(loggedInUser);
+            setAuth(true)
+        }
+    },[a])
 
 
 
@@ -59,6 +72,7 @@ export default function ButtonAppBar() {
                             >
                                 <AccountCircle />
                             </IconButton>
+                                {loggedUser}
                             <Menu
                                 id="menu-appbar"
                                 anchorEl={anchorEl}
@@ -73,7 +87,12 @@ export default function ButtonAppBar() {
                                 }}
                             >
                             </Menu>
-                            <Button size={"large"} onClick={()=>{history('/home')}} color="inherit"><b>Logout</b></Button>
+                            <Button size={"large"} onClick={()=>{
+
+                                localStorage.clear()
+                                history('/home')
+                                window.location.reload(false);
+                            }} color="inherit"><b>Logout</b></Button>
                             <Button color="inherit" onClick={()=>{history('/home')}}><b>Dashboard</b></Button>
                         </div>
                     )}

@@ -27,8 +27,8 @@ const localizer = momentLocalizer(moment)
 const UserHomePage = () =>{
     const location = useLocation();
     // console.log(location.state)
-    const userId = location.state.user_id
-    const token = location.state.token;
+    const userId = localStorage.getItem("user_id")
+    const token = localStorage.getItem("token");
     const [selectedSlot,setSelectedSlot] = useState('')
     const [pto_reason, setPtoReason] = useState('');
     const [pto_comment, setPtoComment] = useState('');

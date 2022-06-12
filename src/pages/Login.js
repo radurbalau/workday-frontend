@@ -74,6 +74,12 @@ export default function SignIn() {
                             handleClickOpen()
                             setDialogueMessage(resp.data.message)
                         } else {
+                            //Store the user in local storage
+                            localStorage.setItem('user', resp.data.item.email)
+                            localStorage.setItem('user_id', resp.data.item.id)
+                            localStorage.setItem('token', resp.data.token)
+
+                            console.log(resp.data.item)
                             history("/users/" + username, {
                                 state: {
                                     token: resp.data.token,
@@ -93,6 +99,9 @@ export default function SignIn() {
                         handleClickOpen()
                         setDialogueMessage(resp.data.message)
                     } else {
+                        localStorage.setItem('user', resp.data.item.email)
+                        localStorage.setItem('token', resp.data.token)
+
                         history("/admin/" + username, {
                             state: {
                                 token: resp.data.token,
