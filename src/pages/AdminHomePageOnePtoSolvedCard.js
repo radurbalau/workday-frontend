@@ -38,7 +38,6 @@ export default function AdminHomePageOnePtoCheckedCard(props) {
             </DialogActions>
         </Dialog>
         <Card style={{backgroundColor: props.pto.admin_approved === true ? "#81c784" : "#e57373" }} onClick={handleClickOpen} sx={{ minWidth: 345 }}>
-            {/*TODO: set red / green for ptos*/}
             <CardActionArea>
                 <CardContent>
                     <Typography gutterBottom variant="h5" component="div">

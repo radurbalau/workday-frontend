@@ -56,7 +56,6 @@ export default function AdminHomePageOnePtoUncheckedCard(props) {
     return (<div>
         <button onClick={()=>{console.log(props.pto.user_id)}}>dsada</button>
         <Dialog open={open} onClose={handleClose}>
-            {/*TODO: find a better way to check or not if checkbox is checked */}
             <DialogContent>
                 Do you really want to approve this PTO ?
                 <Checkbox

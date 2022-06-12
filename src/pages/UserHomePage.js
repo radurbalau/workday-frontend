@@ -16,24 +16,36 @@ import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import Button from "@material-ui/core/Button";
 import Typography from '@mui/material/Typography';
-
+import LuggageIcon from '@mui/icons-material/Luggage';
 import { Calendar, momentLocalizer } from 'react-big-calendar'
 import moment from 'moment'
 import "react-big-calendar/lib/css/react-big-calendar.css"
-import {Card, CardActions, CardContent} from "@mui/material";
-
+import {
+    Card,
+    CardActions,
+    CardContent,
+    Divider,
+    FormControlLabel,
+    LinearProgress,
+    Radio,
+    RadioGroup
+} from "@mui/material";
+import Avatar from "@mui/material/Avatar";
+import DateRangeIcon from '@mui/icons-material/DateRange';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import RadioButtonUncheckedIcon from '@mui/icons-material/RadioButtonUnchecked';
+import DoDisturbIcon from '@mui/icons-material/DoDisturb';
+import {DoNotDisturb} from "@mui/icons-material";
 const localizer = momentLocalizer(moment)
 
 const UserHomePage = () =>{
-    const location = useLocation();
-    // console.log(location.state)
     const userId = localStorage.getItem("user_id")
     const token = localStorage.getItem("token");
     const [selectedSlot,setSelectedSlot] = useState('')
-    const [pto_reason, setPtoReason] = useState('');
     const [pto_comment, setPtoComment] = useState('');
     const [currentPtos, setCurrentPtos] = useState([])
     const [remainingPtos, setRemainingPtos] = useState(0)
+    const [ptoReason, setPtoReason] = React.useState('regular');
 
     useEffect(()=>{
            axios.get(process.env.REACT_APP_LOCAL_HOST + "/users/pto/" + userId,{
@@ -44,7 +56,6 @@ const UserHomePage = () =>{
                 setRemainingPtos(resp.data.item.user_remaining_pto_days)
            })
 
-        //TODO: put an observer here
         axios.get(process.env.REACT_APP_LOCAL_HOST + "/users/pto/requests/" + userId,{
             headers: {
                 'Authorization': `${token}`
@@ -53,11 +64,11 @@ const UserHomePage = () =>{
             setCurrentPtos([])
             for(let item of resp.data.item){
                 let x = item.pto_date_taken.split("T")[0].split("-")
-                console.log("x = " + x )
                 const list_item={
                     "title":item.pto_reason,
                     "comment" : item.pto_comment,
                     "allDay": true,
+                    "day":renderDate(item),
                     "start":new Date(item.pto_date_taken),
                     "end":new Date(item.pto_date_taken),
                     "admin_approved": item.admin_approved,
@@ -71,7 +82,7 @@ const UserHomePage = () =>{
     },[])
 
     const [open, setOpen] = React.useState(false);
-
+    //TODO: find a way to refresh table after a request was added
     const handleClickOpen = () => {
         setOpen(true);
     };
@@ -80,23 +91,27 @@ const UserHomePage = () =>{
         setOpen(false);
     };
 
+    const handleRadioValue = (event) => {
+        setPtoReason(event.target.value);
+    };
+
     const handleRequestPto = (e) => {
-        console.log(pto_reason)
         console.log(pto_comment)
         console.log(selectedSlot)
+
         const list_item={
-            "title":pto_reason,
+            "title":ptoReason,
             "comment" : pto_comment,
             "allDay": true,
-            "start":new Date(selectedSlot),
-            "end":new Date(selectedSlot),
+            "start":selectedSlot,
+            "end":selectedSlot,
             "admin_approved": null,
             "key": currentPtos.length + 1
         }
         setCurrentPtos((currentPtos)=> [...currentPtos,list_item])
         axios.post(process.env.REACT_APP_LOCAL_HOST + "/users/pto/" + userId, {
             "pto_date_taken": selectedSlot,
-            "pto_reason": pto_reason,
+            "pto_reason": ptoReason,
             "pto_comment": pto_comment,
             "user_id": userId,
         },{
@@ -104,29 +119,40 @@ const UserHomePage = () =>{
                 'Authorization': `${token}`
             }}).then((resp)=>{
                 console.log(resp)
+
         })
-        window.location.reload();
+        // window.location.reload();
     };
 
-    const handlePtoReason = event => {
-        setPtoReason(event.target.value);
-    };
+
 
     const handlePtoComment = event => {
         setPtoComment(event.target.value);
     };
 
+    function isApprovedIcons(day){
+        if(day.admin_approved === true)
+            return (<CheckCircleIcon/> )
+        else if (day.admin_approved === false){
+            return(<DoNotDisturb/>)
+        }else{
+            return( <RadioButtonUncheckedIcon/>
+            )
+        }
+    }
+
     function isApproved(day){
             if(day.admin_approved === true)
-            return (<Typography sx={{ mb: 1.5 }} color="green">
+            return (
+                <Typography  color="green">
                 Approved
             </Typography> )
                 else if (day.admin_approved === false){
-                return(<Typography sx={{ mb: 1.5 }} color="red">
+                return(<Typography  color="red">
                 Denied
             </Typography>)
                 }else{
-               return( <Typography sx={{ mb: 1.5 }} color="orange">
+               return( <Typography  color="orange">
                     Pending
                 </Typography>
                )
@@ -134,31 +160,34 @@ const UserHomePage = () =>{
     }
 
     function renderDate(day){
-        let a = (new Date(day.start).toISOString())
-        return a.split("T")[0].replaceAll("-","/").split("/").reverse().join("/")
+        console.log(day.pto_date_taken)
+        return day.pto_date_taken.split("T")[0].replaceAll("-","/").split("/").reverse().join("/")
     }
+
+//REGULA VACATION
 
     return(<div>
         <Box  p={7} sx={{ flexGrow: 1 }}>
             <Grid container spacing={5}>
-                <Grid item xs={5}>
+                <Grid item xs={6}>
                     <Dialog open={open} onClose={handleClose}>
-                        <DialogTitle>Subscribe</DialogTitle>
+                        <DialogTitle>Day off details</DialogTitle>
                         <DialogContent>
                             <DialogContentText>
                                 This action will take one day off from your pto
                             </DialogContentText>
-                            <TextField
-                                autoFocus
-                                margin="dense"
-                                id="name"
-                                label="Regular / Health reason"
-                                type="Pto Reason"
-                                fullWidth
-                                variant="standard"
-                                value= {pto_reason}
-                                onChange= {handlePtoReason}
-                            />
+                            <Box ml={1} mt={2}>
+                                <RadioGroup
+                                    aria-labelledby="demo-controlled-radio-buttons-group"
+                                    name="controlled-radio-buttons-group"
+                                    value={ptoReason}
+                                    onChange={handleRadioValue}
+
+                                >
+                                    <FormControlLabel value="regular" control={<Radio />} label="Regular day off" />
+                                    <FormControlLabel value="health" control={<Radio />} label="Health reason" />
+                                </RadioGroup>
+                            </Box>
                             <TextField
                                 autoFocus
                                 margin="dense"
@@ -170,12 +199,16 @@ const UserHomePage = () =>{
                                 value= {pto_comment}
                                 onChange= {handlePtoComment}
                             />
+
                         </DialogContent>
+
                         <DialogActions>
                             <Button onClick={handleRequestPto}>Request PTO</Button>
                             <Button onClick={handleClose}>Ok</Button>
                         </DialogActions>
                     </Dialog>
+                    <button onClick={()=>{console.log(currentPtos)}}>PLM</button>
+                    <Box  >
                     <Calendar
                         localizer={localizer}
                         events={currentPtos}
@@ -193,43 +226,168 @@ const UserHomePage = () =>{
                         selectable
                         popup={true}
                     />
+                    </Box>
                 </Grid>
-                <Grid item xs={7}>
-                    Remaining User Ptos  : {remainingPtos}
-                    <button onClick={()=>{console.log(currentPtos)}}>dsdsadsa</button>
+                <Grid item xs={6} maxWidth={450}>
+                    <Box ml={5} mr={20}>
 
-                    <h2>All Paid time offs :</h2>
-                    {/*TODO: add filter for accepted/ denied/ ongoing */}
-                    {/*TODO: Make user choose between types of day offs instead of typing*/}
-                    {currentPtos.map((day)=>{
-                        return(<div style={{marginTop:"10px"}} key={day.key}><Card variant="outlined" sx={{ minWidth: 275 }}>
+                        <Card
+                            sx={{ height: '100%' }}
+                        >
                             <CardContent>
-                                <Grid container spacing={5}>
-                                    <Grid item xs={5}>
-                                        <Typography sx={{ fontSize: 14 }} color="text.secondary" gutterBottom>
-                                            Type of day off
+                                <Grid
+                                    container
+                                    spacing={3}
+                                    sx={{ justifyContent: 'space-between' }}
+                                >
+                                    <Grid item>
+                                        <Typography
+                                            color="textSecondary"
+                                            gutterBottom
+                                            variant="overline"
+                                        >
+                                            <b>Percent of days off used</b>
                                         </Typography>
-                                        <Typography variant="h5" component="div">
-                                            {day.title}
+                                        <Typography
+                                            color="textPrimary"
+                                            variant="h4"
+                                        >
+                                            {Math.round(100 - remainingPtos/21 * 100)}%
                                         </Typography>
-                                        {isApproved(day)}
-
-                                        <Typography variant="body2">
-                                            {day.comment}
+                                        <Typography
+                                            color="textSecondary"
+                                            variant="caption"
+                                        >
+                                            {remainingPtos} {" "} out of 21 remaining
                                         </Typography>
                                     </Grid>
 
-                                    <Grid item xs={4}>
-                                        {renderDate(day)}
-                                        </Grid>
-                                </Grid>
+                                    <Grid item>
+                                        <Avatar
+                                            sx={{
+                                                backgroundColor: 'warning.main',
+                                                height: 56,
+                                                width: 56
+                                            }}
+                                        >
+                                        <LuggageIcon/>
 
+                                        </Avatar>
+                                    </Grid>
+                                </Grid>
+                                <Box sx={{ pt: 3 }}>
+                                    <LinearProgress
+                                        value={100 - remainingPtos/21 * 100}
+                                        variant="determinate"
+                                    />
+                                </Box>
                             </CardContent>
-                            <CardActions>
-                                <Button size="small">View</Button>
-                            </CardActions>
-                        </Card></div>)
-                    })}
+                        </Card>
+
+                    {/*<button onClick={()=>{console.log(currentPtos)}}>dsdsadsa</button>*/}
+
+                        <Box mt={2} p={3} style={{backgroundColor:"lightgray"}}>
+
+
+                            <Box mt={2}  style={{backgroundColor:"#eeeeee"}}>
+                            <Grid sx={{border: 1,  borderColor: '#9e9e9e',
+                            }} style={{textAlign: "center"}}>
+                                <Typography mt={1}  gutterBottom variant="h5" component={"div"}>
+                                    All Days off requested
+                                </Typography>
+                            </Grid>
+
+                    {/*TODO: add filter for accepted/ denied/ ongoing */}
+                    {/*TODO: Make user choose between types of day offs instead of typing*/}
+                                {currentPtos.map((day)=>{
+                                    return(
+
+                                        <Card
+                                            sx={{
+                                                display: 'flex',
+                                                flexDirection: 'column',
+                                                height: '100%',
+                                                marginBottom:'20px'
+                                            }}
+                                        >
+                                            <CardContent>
+                                                <Box
+                                                    sx={{
+                                                        display: 'flex',
+                                                        justifyContent: 'center',
+                                                        pb: 3
+                                                    }}
+                                                >
+
+                                                </Box>
+                                                <Typography
+                                                    align="center"
+                                                    color="textPrimary"
+                                                    gutterBottom
+                                                    variant="h5"
+                                                >
+                                                    {day.title}
+                                                </Typography>
+                                                <Typography
+                                                    align="center"
+                                                    color="textPrimary"
+                                                    variant="body1"
+                                                >
+                                                    {day.comment}
+                                                </Typography>
+                                            </CardContent>
+                                            <Box sx={{ flexGrow: 1 }} />
+                                            <Divider />
+                                            <Box sx={{ p: 2 }}>
+                                                <Grid
+                                                    container
+                                                    spacing={2}
+                                                    sx={{ justifyContent: 'space-between' }}
+                                                >
+                                                    <Grid
+                                                        item
+                                                        sx={{
+                                                            alignItems: 'center',
+                                                            display: 'flex'
+                                                        }}
+                                                    >
+                                                        {isApprovedIcons(day)}
+                                                        <Typography
+                                                            color="textSecondary"
+                                                            display="inline"
+                                                            sx={{ pl: 1 }}
+                                                            variant="body2"
+                                                        >
+                                                            {isApproved(day)}
+                                                        </Typography>
+                                                    </Grid>
+                                                    <Grid
+                                                        item
+                                                        sx={{
+                                                            alignItems: 'center',
+                                                            display: 'flex'
+                                                        }}
+                                                    >
+                                                        <DateRangeIcon/>
+                                                        <Typography
+                                                            color="textSecondary"
+                                                            display="inline"
+                                                            sx={{ pl: 1 }}
+                                                            variant="body2"
+                                                        >
+                                                            {day.day}
+                                                        </Typography>
+                                                    </Grid>
+                                                </Grid>
+                                            </Box>
+                                        </Card>
+                                    )
+                                })}
+                            </Box>
+
+                        </Box>
+                    </Box>
+
                 </Grid>
             </Grid>
         </Box>

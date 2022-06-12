@@ -81,7 +81,6 @@ const AdminHomePage = () =>{
 
         <Grid p={10} container spacing={3}>
         <Grid item xs={4} >
-            {/*TODO: make a meter to measure ptos*/}
             <h2>Click on card to filter by user</h2>
             <div style={{marginTop:"10px",cursor:"pointer"}}>
                 <Box p={1} >
@@ -152,7 +151,6 @@ const AdminHomePage = () =>{
         </Grid>
         <Grid item xs={2}>
             <h2>Solved Requests History</h2>
-            {/*TODO: search user id and filter this thing*/}
             {allPtoList.filter((item)=>{if (name_filter !== '') {
                 return name_filter === item.email.split("@")[0]
             }else{
