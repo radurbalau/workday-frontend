@@ -38,10 +38,15 @@ export default function SignIn() {
 
     const [dialogueMessage,setDialogueMessage] = useState('')
     const [checked, setChecked] = useState(true);
+    const [showPass,setShowPass] = useState(false)
 
     const handleChange = (event) => {
         setChecked(event.target.checked);
     };
+
+    const handlePasswordCheckChange = (e)=> {
+        setShowPass(e.target.checked)
+    }
 
     const [iopen, setOpen] = useState(false);
 
@@ -127,6 +132,10 @@ export default function SignIn() {
                     </DialogActions>
                 </Dialog>
                 <CssBaseline />
+                {/*<button onClick={()=>{ if(showPass===true)*/}
+                {/*    console.log("password")*/}
+                {/*else*/}
+                {/*    console.log("text")}}>llllll</button>*/}
                 <Box
                     sx={{
                         marginTop: 8,
@@ -158,13 +167,16 @@ export default function SignIn() {
                             fullWidth
                             name="password"
                             label="Password"
-                            type="password"
+                            type={
+                                showPass?"text":"password"
+                            }
                             id="password"
                             autoComplete="current-password"
                         />
                         <FormControlLabel
-                            control={<Checkbox value="remember" color="primary" />}
-                            label="Remember me"
+                            control={<Checkbox checked={showPass}      onChange={handlePasswordCheckChange}
+                                                     value="remember" color="primary" />}
+                            label="Show Password"
                         />
                         <Switch
                             checked={checked}

@@ -31,10 +31,16 @@ const Register = () =>{
 
     const [iopen, setOpen] = useState(false);
     const [dialogueMessage,setDialogueMessage] = useState('')
+    const [showPass,setShowPass] = useState(false)
 
     const handleSubmit = (event) => {
         event.preventDefault();
         const data = new FormData(event.currentTarget);
+        if(data.get("retypePassword")!==data.get("password")){
+            handleClickOpen()
+            setDialogueMessage("Passwords do not match !")
+        }
+
         if( re.test(data.get('email')) === false){
             handleClickOpen()
             setDialogueMessage("Entered email is not valid !")
@@ -47,6 +53,10 @@ const Register = () =>{
             })
         }
     };
+
+    const handlePasswordCheckChange = (e)=> {
+        setShowPass(e.target.checked)
+    }
 
     const handleClickOpen = () => {
         setOpen(true);
@@ -108,13 +118,28 @@ const Register = () =>{
                             fullWidth
                             name="password"
                             label="Password"
-                            type="password"
+                            type={
+                                showPass?"text":"password"
+                            }
                             id="password"
                             autoComplete="current-password"
                         />
+                        <TextField
+                            margin="normal"
+                            required
+                            fullWidth
+                            name="retypePassword"
+                            label="Retype Password"
+                            type={
+                                showPass?"text":"password"
+                            }
+                            id="retypePassword"
+                            autoComplete="current-password"
+                        />
                         <FormControlLabel
-                            control={<Checkbox value="remember" color="primary" />}
-                            label="Remember me"
+                            control={<Checkbox checked={showPass}      onChange={handlePasswordCheckChange}
+                                               value="remember" color="primary" />}
+                            label="Show Password"
                         />
                         <Button
                             type="submit"
