@@ -76,6 +76,8 @@ export default function SignIn() {
                             localStorage.setItem('user', resp.data.item.email)
                             localStorage.setItem('user_id', resp.data.item.id)
                             localStorage.setItem('token', resp.data.token)
+                            localStorage.setItem("isAdmin","false")
+
 
                             console.log(resp.data.item)
                             history("/users/" + username, {
@@ -99,6 +101,7 @@ export default function SignIn() {
                     } else {
                         localStorage.setItem('user', resp.data.item.email)
                         localStorage.setItem('token', resp.data.token)
+                        localStorage.setItem("isAdmin","true")
 
                         history("/admin/" + username, {
                             state: {

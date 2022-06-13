@@ -1,10 +1,5 @@
-import {useLocation} from "react-router-dom";
 import * as React from 'react';
-import isWeekend from 'date-fns/isWeekend';
 import TextField from '@mui/material/TextField';
-import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import { StaticDatePicker } from '@mui/x-date-pickers/StaticDatePicker';
 import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
 import {useEffect, useState} from "react";
@@ -21,8 +16,8 @@ import { Calendar, momentLocalizer } from 'react-big-calendar'
 import moment from 'moment'
 import "react-big-calendar/lib/css/react-big-calendar.css"
 import {
+    ButtonGroup,
     Card,
-    CardActions,
     CardContent,
     Divider,
     FormControlLabel,
@@ -34,7 +29,6 @@ import Avatar from "@mui/material/Avatar";
 import DateRangeIcon from '@mui/icons-material/DateRange';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import RadioButtonUncheckedIcon from '@mui/icons-material/RadioButtonUnchecked';
-import DoDisturbIcon from '@mui/icons-material/DoDisturb';
 import {DoNotDisturb} from "@mui/icons-material";
 const localizer = momentLocalizer(moment)
 
@@ -46,6 +40,7 @@ const UserHomePage = () =>{
     const [currentPtos, setCurrentPtos] = useState([])
     const [remainingPtos, setRemainingPtos] = useState(0)
     const [ptoReason, setPtoReason] = React.useState('regular');
+    const [filterButton,setFilterButton] = useState('')
 
     useEffect(()=>{
            axios.get(process.env.REACT_APP_LOCAL_HOST + "/users/pto/" + userId,{
@@ -79,10 +74,10 @@ const UserHomePage = () =>{
             }
             console.log(currentPtos)
         })
+
     },[])
 
     const [open, setOpen] = React.useState(false);
-    //TODO: find a way to refresh table after a request was added
     const handleClickOpen = () => {
         setOpen(true);
     };
@@ -121,10 +116,31 @@ const UserHomePage = () =>{
                 console.log(resp)
 
         })
-        // window.location.reload();
+        window.location.reload();
     };
 
+    const handleApprovedButtonClick = ()=>{
+        if(filterButton === "approved")
+            setFilterButton("")
+        else
+        setFilterButton("approved")
+    }
 
+    const handlePendingButtonClick = ()=>{
+        if(filterButton === "pending")
+            setFilterButton("")
+        else
+        setFilterButton("pending")
+
+    }
+
+    const handleDeniedButtonClick = ()=>{
+        if(filterButton === "denied")
+            setFilterButton("")
+        else
+        setFilterButton("denied")
+
+    }
 
     const handlePtoComment = event => {
         setPtoComment(event.target.value);
@@ -164,7 +180,6 @@ const UserHomePage = () =>{
         return day.pto_date_taken.split("T")[0].replaceAll("-","/").split("/").reverse().join("/")
     }
 
-//REGULA VACATION
 
     return(<div>
         <Box  p={7} sx={{ flexGrow: 1 }}>
@@ -208,7 +223,7 @@ const UserHomePage = () =>{
                         </DialogActions>
                     </Dialog>
                     <button onClick={()=>{console.log(currentPtos)}}>PLM</button>
-                    <Box  >
+                    <Box mb={3} >
                     <Calendar
                         localizer={localizer}
                         events={currentPtos}
@@ -289,17 +304,43 @@ const UserHomePage = () =>{
                         <Box mt={2} p={3} style={{backgroundColor:"lightgray"}}>
 
 
-                            <Box mt={2}  style={{backgroundColor:"#eeeeee"}}>
+                            <Box  style={{backgroundColor:"#eeeeee"}}>
                             <Grid sx={{border: 1,  borderColor: '#9e9e9e',
                             }} style={{textAlign: "center"}}>
-                                <Typography mt={1}  gutterBottom variant="h5" component={"div"}>
+                                <Typography mt={1}   gutterBottom variant="h5" component={"div"}>
                                     All Days off requested
                                 </Typography>
+                                <Box>
+
+                                <ButtonGroup color={"secondary"} variant="contained" aria-label="outlined primary button group">
+                                    <Grid sx={{border: 1,  borderColor: '#9e9e9e',
+                                    }} style={{textAlign: "center"}}>
+                                    <Button onClick={handleApprovedButtonClick}>Filter by Approved</Button>
+                                    </Grid>
+                                    <Grid sx={{border: 1,  borderColor: '#9e9e9e',
+                                    }} style={{textAlign: "center"}}>
+                                    <Button onClick={handlePendingButtonClick}>Filter by Pending</Button>
+                                    </Grid>
+
+                                    <Grid sx={{border: 1,  borderColor: '#9e9e9e',
+                                        }} style={{textAlign: "center"}}>
+                                    <Button onClick={handleDeniedButtonClick}>Filter by Denied</Button>
+                                        </Grid>
+
+                                </ButtonGroup>
+                                </Box>
                             </Grid>
 
-                    {/*TODO: add filter for accepted/ denied/ ongoing */}
-                    {/*TODO: Make user choose between types of day offs instead of typing*/}
-                                {currentPtos.map((day)=>{
+                                {currentPtos.filter((day)=>{
+                                    if(filterButton==="approved")
+                                        return day.admin_approved === true;
+                                    else if (filterButton === "denied")
+                                        return day.admin_approved === false;
+                                    else
+                                        if (filterButton === "pending")
+                                            return day.admin_approved === null
+                                    else return true
+                                }).map((day)=>{
                                     return(
 
                                         <Card

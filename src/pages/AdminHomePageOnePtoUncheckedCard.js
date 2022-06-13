@@ -1,17 +1,18 @@
-import {Card, CardActionArea, CardContent} from "@mui/material";
+import {Card, CardActionArea, CardContent, Divider} from "@mui/material";
 import Typography from "@mui/material/Typography";
 import Button from '@mui/material/Button';
-import TextField from '@mui/material/TextField';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
-import DialogContentText from '@mui/material/DialogContentText';
-import DialogTitle from '@mui/material/DialogTitle';
 import * as React from 'react';
 import Checkbox from '@mui/material/Checkbox';
 import axios from "axios";
 import Grid from "@mui/material/Grid";
 import Box from "@mui/material/Box";
+import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
+import LuggageIcon from '@mui/icons-material/Luggage';
+import LocalHospitalIcon from '@mui/icons-material/LocalHospital';
+import {Home} from "@mui/icons-material";
 
 export default function AdminHomePageOnePtoUncheckedCard(props) {
     const [open, setOpen] = React.useState(false);
@@ -54,7 +55,6 @@ export default function AdminHomePageOnePtoUncheckedCard(props) {
     }
 
     return (<div>
-        <button onClick={()=>{console.log(props.pto.user_id)}}>dsada</button>
         <Dialog open={open} onClose={handleClose}>
             <DialogContent>
                 Do you really want to approve this PTO ?
@@ -71,34 +71,74 @@ export default function AdminHomePageOnePtoUncheckedCard(props) {
             </DialogActions>
         </Dialog>
 
-        <Card style={{backgroundColor:"#ffa183"}} onClick={handleClickOpen} sx={{ maxWidth: 600 }}>
+        <Box style={{backgroundColor:"#ffa183"}} sx={{ maxWidth: 600 }}>
+        <Card style={{backgroundColor:"#ffbba7"}} onClick={handleClickOpen} >
         <CardActionArea>
             <CardContent>
-                <Box p={1}>
+                <Box p={1} ml={1} mr={1}>
                 <Typography gutterBottom variant="h5" component="div">
                     {props.pto.email.split("@")[0]}
                 </Typography>
-                <Grid container display={"flex"} spacing={1}>
-                    <Grid item xs={6}>
-                        <Typography gutterBottom variant="body3" component="div">
-                            {props.pto.pto_date_taken.split("T")[0]}
-                        </Typography>
-                    </Grid>
-                    <Grid item  xs={6}>
-                        <Box display="flex" justifyContent="flex-end">
-                        <Typography gutterBottom variant="body3" component="div">
-                            {props.pto.pto_reason}
-                        </Typography>
-                        </Box>
-                    </Grid>
-                </Grid>
 
-                <Typography variant="body2" color="text.secondary">
+
+                <Typography mb={1} variant="body2" color="text.secondary">
                     {props.pto.pto_comment}
                 </Typography>
+
+                    <Divider  />
+                    <Box mt={1}>
+                    <Grid container display={"flex"} spacing={1}>
+                        <Grid item xs={6}>
+                            <Grid
+                                item
+                                sx={{
+                                    alignItems: 'center',
+                                    display: 'flex'
+                                }}
+                            >
+                                <CalendarMonthIcon/>
+
+                                <Typography
+                                    color="textSecondary"
+                                    display="inline"
+                                    sx={{ pl: 1 }}
+                                    variant="body2"
+                                >
+                                    {props.pto.pto_date_taken.split("T")[0]}
+                                </Typography>
+                            </Grid>
+                        </Grid>
+                        <Grid item  xs={6}>
+                            <Box  display="flex" justifyContent="flex-end">
+                            <Grid
+                                item
+                                sx={{
+                                    alignItems: 'center',
+                                    display: 'flex'
+                                }}
+                            >
+
+                            <Box >
+                                <Typography gutterBottom variant="body3" component="div">
+                                    {props.pto.pto_reason}
+                                </Typography>
+                            </Box>
+                                {props.pto.pto_reason === "regular" || props.pto.pto_reason === "Regular"?
+                                    <LuggageIcon/>
+                                    :
+                                    <LocalHospitalIcon/>
+                                }
+
+                            </Grid>
+                            </Box>
+                        </Grid>
+                    </Grid>
+                    </Box>
                 </Box>
             </CardContent>
         </CardActionArea>
 
-    </Card></div>)
+    </Card>
+        </Box>
+    </div>)
 }

@@ -93,8 +93,13 @@ export default function Navbar() {
                                 history('/home')
                                 window.location.reload(false);
                             }} color="inherit"><b>Logout</b></Button>
-                            {/*TODO: make it to admin also*/}
-                            <Button color="inherit" onClick={()=>{history('/users/'+localStorage.getItem("user").split("@")[0])}}><b>Dashboard</b></Button>
+
+                            <Button color="inherit" onClick={()=>{
+                                if(localStorage.getItem("isAdmin") === "false")
+                                    return history('/users/'+localStorage.getItem("user").split("@")[0])
+                            else
+                                return history('/admin/'+localStorage.getItem("user").split("@")[0])
+                            }}><b>Dashboard</b></Button>
                         </div>
                     )}
 

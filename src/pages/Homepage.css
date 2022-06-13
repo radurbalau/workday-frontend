@@ -1,0 +1,23 @@
+.EA-header-bar {
+    display: flex;
+    background-color: rgb(206,33,39);
+    text-align: center;
+    justify-content: center;
+    align-items: center;
+}
+.EA-col-img {
+    padding-left: 20px;
+}
+.EA-col-txt {
+    flex:1
+}
+.EA-header-image {
+    height:150px;
+}
+
+.EA-header-text {
+    color: white;
+    font-size: 6vmin;
+    font: bolder;
+    font-family: kalinga;
+}

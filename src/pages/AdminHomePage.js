@@ -54,7 +54,7 @@ const AdminHomePage = () =>{
 
     useEffect(()=>{
 
-        axios.get(process.env.REACT_APP_LOCAL_HOST + "/admin/review/admin/all",{
+        axios.get(process.env.REACT_APP_LOCAL_HOST + "/admin/admin/all",{
             headers: {
                 'Authorization': `${token}`
             }
@@ -65,7 +65,7 @@ const AdminHomePage = () =>{
     },[])
 
     useEffect(()=>{
-        axios.get(process.env.REACT_APP_LOCAL_HOST + "/admin/review/user/all",{
+        axios.get(process.env.REACT_APP_LOCAL_HOST + "/admin/user/all",{
             headers: {
                 'Authorization': `${token}`
             }
@@ -76,12 +76,14 @@ const AdminHomePage = () =>{
 
 
         return(<div>
-        <button onClick={()=>{console.log(allPtoList)}}>dsadsdsa</button>
-
-
-        <Grid p={10} container spacing={3}>
+        <Grid  p={5} container spacing={3}>
         <Grid item xs={4} >
-            <h2>Click on card to filter by user</h2>
+            <Box style={{backgroundColor:"#eeeeee"}} sx={{ maxWidth: 500 }}>
+            <Box ml={3}>
+                <Typography mt={5}  gutterBottom variant="h5" component={"div"}>
+                    <b>Click on card to filter by user</b></Typography>
+            </Box>
+                <Box ml={1}>
             <div style={{marginTop:"10px",cursor:"pointer"}}>
                 <Box p={1} >
                     <Card onClick={()=>{setNameFilter("")}} style={{backgroundColor:"#e0e0e0"}} sx={{ maxWidth: 450 }}>
@@ -132,10 +134,14 @@ const AdminHomePage = () =>{
                     </div>)
                 })}
             </Box>
+                </Box>
+            </Box>
         </Grid>
-        <Grid item xs={5}>
+        <Grid item xs={3.5}>
             {/*<button onClick={()=>{setNameFilter("raduadmin")}}> Filter By raduadmin</button>*/}
-            <h2>Not approved Ptos</h2>
+
+            <Typography mt={5} ml={2}  gutterBottom variant="h5" component={"div"}>
+                <b>Pending Days Off Requests</b></Typography>
             <div>
             {allPtoList.filter((item)=>{if (name_filter !== '') {
                 return name_filter === item.email.split("@")[0]
@@ -149,8 +155,9 @@ const AdminHomePage = () =>{
             })}
             </div>
         </Grid>
-        <Grid item xs={2}>
-            <h2>Solved Requests History</h2>
+        <Grid item xs={3.5}>
+            <Typography mt={5} ml={2}  gutterBottom variant="h5" component={"div"}>
+                <b>Solved Requests</b></Typography>
             {allPtoList.filter((item)=>{if (name_filter !== '') {
                 return name_filter === item.email.split("@")[0]
             }else{
@@ -162,6 +169,7 @@ const AdminHomePage = () =>{
                 </div>
             })}
         </Grid>
+
     </Grid>
         </div>)
 
